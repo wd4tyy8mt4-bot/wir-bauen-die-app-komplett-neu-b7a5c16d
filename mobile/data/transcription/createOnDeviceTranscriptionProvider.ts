@@ -60,7 +60,12 @@ export function createOnDeviceTranscriptionProvider(): TranscriptionProvider {
         const resultSubscription = ExpoSpeechRecognitionModule.addListener('result', (event) => {
           const candidate = event.results[0];
           if (candidate?.transcript) {
-            transcript = candidate.transcript.trim();
+            const nextTranscript = candidate.transcript.trim();
+if (nextTranscript) {
+  transcript = transcript
+    ? `${transcript} ${nextTranscript}`.trim()
+    : nextTranscript;
+}
             confidence = candidate.confidence;
           }
         });
@@ -102,7 +107,7 @@ export function createOnDeviceTranscriptionProvider(): TranscriptionProvider {
         try {
           ExpoSpeechRecognitionModule.start({
             lang: request.locale,
-            continuous: false,
+            continuous: true,
             interimResults: true,
             maxAlternatives: 1,
             requiresOnDeviceRecognition: true,
